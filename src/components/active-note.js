@@ -65,14 +65,6 @@ class ActiveNote extends HTMLElement {
       margin-bottom: 10px;
     }
 
-    span {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 12px;
-      color: var(--white-alpha-low);
-    }
-
     p {
       font-size: 14px;
       font-weight: lighter;
@@ -122,6 +114,10 @@ class ActiveNote extends HTMLElement {
     }
 
     .note-empty {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
       margin-top: 10px;
       width: 100%;
       text-align: center;
@@ -131,6 +127,25 @@ class ActiveNote extends HTMLElement {
       border: 1px solid var(--white-alpha-low);
       border-radius: 4px;
       padding: 10px;
+    }
+
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-color: rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     @media screen and (min-width: 768px) {
@@ -149,6 +164,7 @@ class ActiveNote extends HTMLElement {
    * @returns {Promise<void>}
    */
   async connectedCallback() {
+    this.renderLoading();
     await this.fetchNotes();
     this.setupEventListeners();
   }
@@ -192,6 +208,19 @@ class ActiveNote extends HTMLElement {
         composed: true,
       }),
     );
+  }
+
+  renderLoading() {
+    this.getStyles();
+
+    this.shadowRoot.innerHTML = `
+      ${this._style.outerHTML}
+      <h2>Active Notes</h2>
+      <div class="note-empty">
+        <p>Loading</p>
+        <span class="loading-spinner"></span>
+      </div>
+    `;
   }
 
   /**
